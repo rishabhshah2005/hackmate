@@ -25,123 +25,125 @@ const ParticipantCard = ({ participant, onInvite, onMessage }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300"
+      whileHover={{ y: -2 }}
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-all duration-200"
     >
-      {/* Header */}
-      <div className="p-6 pb-4">
+      <div className="p-6">
         <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-              <span className="text-white font-semibold">
-                {participant.name.split(' ').map(n => n[0]).join('')}
-              </span>
-            </div>
-            <div>
+          <div className="flex items-start space-x-4">
+            <img
+              src={participant.avatar}
+              alt={participant.name}
+              className="w-16 h-16 rounded-full object-cover ring-4 ring-white dark:ring-gray-800 shadow-sm"
+            />
+            <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                 {participant.name}
               </h3>
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <Star className="mr-1 h-3 w-3 fill-current text-yellow-500" />
-                {participant.rating}
+              <div className="flex items-center space-x-2 mt-1">
+                <div className="flex items-center">
+                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400 ml-1">
+                    {participant.rating}
+                  </span>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${experienceColors[participant.experience]}`}>
+                  {participant.experience}
+                </span>
+              </div>
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1">
+                <MapPin className="w-4 h-4 mr-1" />
+                {participant.location}
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${experienceColors[participant.experience]}`}>
-              {participant.experience}
-            </span>
+
+          <div className={`px-3 py-2 rounded-lg ${getCompatibilityBg(participant.compatibility)}`}>
+            <div className="text-center">
+              <div className={`text-lg font-bold ${getCompatibilityColor(participant.compatibility)}`}>
+                {participant.compatibility}%
+              </div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Match
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-4">
-          <MapPin className="mr-1 h-4 w-4" />
-          {participant.location}
-        </div>
-
-        {/* Compatibility Score */}
-        <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getCompatibilityBg(participant.compatibility)} ${getCompatibilityColor(participant.compatibility)}`}>
-          <Target className="mr-1 h-3 w-3" />
-          {participant.compatibility}% Match
-        </div>
-      </div>
-
-      {/* Bio */}
-      <div className="px-6 pb-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-2">
           {participant.bio}
         </p>
-      </div>
 
-      {/* Skills */}
-      <div className="px-6 pb-4">
-        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-          Skills
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {participant.skills.slice(0, 4).map((skill) => (
-            <span
-              key={skill}
-              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs"
-            >
-              {skill}
-            </span>
-          ))}
-          {participant.skills.length > 4 && (
-            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs">
-              +{participant.skills.length - 4}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Complementary Skills */}
-      {participant.complementarySkills && participant.complementarySkills.length > 0 && (
-        <div className="px-6 pb-4">
-          <h4 className="text-sm font-medium text-green-600 dark:text-green-400 mb-2">
-            Complementary Skills
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {participant.complementarySkills.slice(0, 3).map((skill) => (
-              <span
-                key={skill}
-                className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-md text-xs border border-green-200 dark:border-green-800"
-              >
-                {skill}
-              </span>
-            ))}
+        <div className="space-y-3 mb-4">
+          <div>
+            <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">Skills</div>
+            <div className="flex flex-wrap gap-1">
+              {participant.skills.slice(0, 4).map((skill) => (
+                <span
+                  key={skill}
+                  className={`px-2 py-1 rounded text-xs font-medium ${participant.commonSkills.includes(skill)
+                      ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 ring-1 ring-blue-200 dark:ring-blue-800'
+                      : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                    }`}
+                >
+                  {skill}
+                </span>
+              ))}
+              {participant.skills.length > 4 && (
+                <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">
+                  +{participant.skills.length - 4}
+                </span>
+              )}
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Actions */}
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between">
-        <div className="flex space-x-2">
-          {participant.github && (
-            <a
-              href={participant.github}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-            >
-              <Github className="h-4 w-4" />
-            </a>
+          {participant.complementarySkills.length > 0 && (
+            <div>
+              <div className="text-xs font-medium text-green-600 dark:text-green-400 mb-2">
+                Complementary Skills
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {participant.complementarySkills.slice(0, 3).map((skill) => (
+                  <span
+                    key={skill}
+                    className="px-2 py-1 rounded text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
           )}
+        </div>
+
+        <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex items-center space-x-3">
+            {participant.github && (
+              <a
+                href={`https://github.com/${participant.github}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <Github className="w-4 h-4" />
+              </a>
+            )}
+            <button
+              onClick={() => onMessage?.(participant)}
+              className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+            </button>
+          </div>
+
           <button
-            onClick={() => onMessage?.(participant)}
-            className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            onClick={() => onInvite?.(participant)}
+            className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center"
           >
-            <MessageCircle className="h-4 w-4" />
+            <UserPlus className="w-4 h-4 mr-2" />
+            Invite
           </button>
         </div>
-        <button
-          onClick={() => onInvite?.(participant)}
-          className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center"
-        >
-          <UserPlus className="mr-1 h-4 w-4" />
-          Invite
-        </button>
       </div>
     </motion.div>
   );
