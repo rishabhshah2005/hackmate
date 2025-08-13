@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Calendar, MapPin, Trophy, SlidersHorizontal } from 'lucide-react';
 import HackathonCard from './HackathonCard';
-import { mockHackathons } from '../../data/mockData';
+import axios from 'axios';
+import apiClient from '../../api/axios';
 
 const HackathonList = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -11,8 +12,54 @@ const HackathonList = () => {
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortBy, setSortBy] = useState('date');
   const [showFilters, setShowFilters] = useState(false);
+  const [hackathons, setHackathons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const allTags = Array.from(new Set(mockHackathons.flatMap(h => h.tags)));
+  // Map backend fields to frontend expectations
+  const mapHackathon = (h) => ({
+    id: h.id,
+    title: h.title,
+    description: h.description || '',
+    image: h.image || '',
+    url: h.url || '',
+    startDate: h.start_date || h.startDate,
+    endDate: h.end_date || h.endDate,
+    registrationDeadline: h.registration_deadline || h.registrationDeadline || h.start_date || h.startDate,
+    location: h.location || '',
+    type: h.is_virtual === true || h.platform === 'mlh' ? 'online' : (h.type || 'in-person'),
+    tags: h.tags || [],
+    prizePool: h.prize_pool || h.prizePool || '-',
+    participants: h.participants || 0,
+    maxTeamSize: h.max_team_size || h.maxTeamSize || '-',
+    registrationUrl: h.registration_url || h.registrationUrl || h.url,
+  });
+
+  useEffect(() => {
+    const fetchHackathons = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await apiClient.get('/hackathons/');
+        let data = res.data;
+        if (!Array.isArray(data)) data = [];
+        // Map backend fields to frontend expectations
+        setHackathons(data.map(mapHackathon));
+      } catch (err) {
+        setError('Failed to load hackathons.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchHackathons();
+  }, []);
+
+  // Defensive: ensure hackathons is always an array
+  const safeHackathons = Array.isArray(hackathons) ? hackathons : [];
+  const allTags = Array.from(new Set(safeHackathons.reduce((acc, h) => {
+    if (Array.isArray(h.tags)) return acc.concat(h.tags);
+    return acc;
+  }, [])));
 
   const typeOptions = [
     { value: 'all', label: 'All Types' },
@@ -48,7 +95,7 @@ const HackathonList = () => {
     return 'upcoming';
   };
 
-  const filteredHackathons = mockHackathons
+  const filteredHackathons = safeHackathons
     .filter(hackathon => {
       const matchesSearch = hackathon.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         hackathon.description.toLowerCase().includes(searchTerm.toLowerCase());
@@ -88,6 +135,21 @@ const HackathonList = () => {
     setSelectedTags([]);
     setSortBy('date');
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <span className="text-lg text-gray-500 dark:text-gray-400">Loading hackathons...</span>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <span className="text-lg text-red-500 dark:text-red-400">{error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -226,7 +288,7 @@ const HackathonList = () => {
           >
             <HackathonCard
               hackathon={hackathon}
-              onApply={(h) => console.log('Apply to:', h.title)}
+              onApply={(h) => window.open(h.registrationUrl || h.url, '_blank')}
             />
           </motion.div>
         ))}

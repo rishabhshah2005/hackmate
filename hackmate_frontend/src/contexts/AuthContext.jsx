@@ -1,4 +1,6 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
 
 const AuthContext = createContext(undefined);
 
@@ -15,88 +17,84 @@ export const AuthProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check for existing auth token
     const token = localStorage.getItem('authToken');
     if (token) {
-      // Mock user data - in real app, decode token or fetch user
-      setUser({
-        id: '1',
-        name: 'Alex Johnson',
-        email: 'alex@example.com',
-        avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-        skills: ['React', 'Node.js', 'Python', 'Machine Learning'],
-        interests: ['AI/ML', 'Web Development', 'Mobile Apps'],
-        experience: 'intermediate',
-        github: 'alexj',
-        linkedin: 'alexjohnson',
-        bio: 'Passionate full-stack developer with ML experience',
-        rating: 4.8,
-        location: 'San Francisco, CA'
-      });
+      setIsLoading(true);
+      axios.get('http://localhost:8000/auth/me/', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+        .then(res => {
+          setUser(res.data);
+        })
+        .catch(() => {
+          setUser(null);
+          localStorage.removeItem('authToken');
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   }, []);
 
   const login = async (email, password) => {
     setIsLoading(true);
-    // Mock login - replace with actual API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        localStorage.setItem('authToken', 'mock-jwt-token');
-        setUser({
-          id: '1',
-          name: 'Alex Johnson',
-          email,
-          avatar: 'https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&dpr=2',
-          skills: ['React', 'Node.js', 'Python', 'Machine Learning'],
-          interests: ['AI/ML', 'Web Development', 'Mobile Apps'],
-          experience: 'intermediate',
-          github: 'alexj',
-          linkedin: 'alexjohnson',
-          bio: 'Passionate full-stack developer with ML experience',
-          rating: 4.8,
-          location: 'San Francisco, CA'
-        });
-        setIsLoading(false);
-        resolve();
-      }, 1000);
-    });
+    try {
+      const res = await axios.post('http://localhost:8000/auth/login/', {
+        email,
+        password
+      });
+      const { access, refresh, user } = res.data;
+      localStorage.setItem('authToken', access);
+      localStorage.setItem('refreshToken', refresh);
+      setUser(user);
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      throw err;
+    }
   };
 
   const signup = async (userData) => {
     setIsLoading(true);
-    // Mock signup - replace with actual API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        localStorage.setItem('authToken', 'mock-jwt-token');
-        setUser({
-          id: Date.now().toString(),
-          ...userData,
-          rating: 0
-        });
-        setIsLoading(false);
-        resolve();
-      }, 1000);
-    });
+    try {
+      // Register user
+      await axios.post('http://localhost:8000/auth/register/', {
+        email: userData.email,
+        password: userData.password,
+        username: userData.name
+      });
+      // Login after signup
+      await login(userData.email, userData.password);
+      // Optionally, update profile (skills, interests, etc.)
+      // await axios.put('http://localhost:8000/users/profile/me/', {
+      //   ...userData
+      // }, { headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` } });
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      throw err;
+    }
   };
 
   const logout = () => {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
     setUser(null);
   };
 
   const updateProfile = async (userData) => {
     setIsLoading(true);
-    // Mock update - replace with actual API call
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (user) {
-          setUser({ ...user, ...userData });
-        }
-        setIsLoading(false);
-        resolve();
-      }, 500);
-    });
+    try {
+      const token = localStorage.getItem('authToken');
+      const res = await axios.put('http://localhost:8000/users/profile/me/', userData, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUser(res.data);
+      setIsLoading(false);
+    } catch (err) {
+      setIsLoading(false);
+      throw err;
+    }
   };
 
   const value = {

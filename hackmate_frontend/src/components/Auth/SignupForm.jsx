@@ -75,7 +75,16 @@ const SignupForm = () => {
         await signup(formData);
         navigate('/dashboard');
       } catch (error) {
-        setErrors({ general: 'Failed to create account. Please try again.' });
+        if (error.response && error.response.data) {
+          let msg = 'Failed to create account.';
+          if (typeof error.response.data === 'string') msg = error.response.data;
+          else if (error.response.data.email) msg = error.response.data.email;
+          else if (error.response.data.password) msg = error.response.data.password;
+          else if (error.response.data.username) msg = error.response.data.username;
+          setErrors({ general: msg });
+        } else {
+          setErrors({ general: 'Failed to create account. Please try again.' });
+        }
       }
     }
   };

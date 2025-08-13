@@ -29,9 +29,11 @@ const LoginForm = () => {
       await login(formData.email, formData.password);
       navigate('/dashboard');
     } catch (error) {
-      setErrors({
-        general: 'Invalid credentials. Please try again.'
-      });
+      if (error.response && error.response.data && error.response.data.detail) {
+        setErrors({ general: error.response.data.detail });
+      } else {
+        setErrors({ general: 'Invalid credentials. Please try again.' });
+      }
     }
   };
 

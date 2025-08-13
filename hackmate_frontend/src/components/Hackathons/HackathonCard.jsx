@@ -4,10 +4,12 @@ import { Calendar, MapPin, Users, Trophy, Clock, ExternalLink } from 'lucide-rea
 import { format, formatDistance } from 'date-fns';
 
 const HackathonCard = ({ hackathon, onApply }) => {
-  const isRegistrationOpen = new Date() < new Date(hackathon.registrationDeadline);
-  const startDate = new Date(hackathon.startDate);
-  const endDate = new Date(hackathon.endDate);
+  // Defensive fallback for missing fields
   const now = new Date();
+  const startDate = hackathon.startDate ? new Date(hackathon.startDate) : now;
+  const endDate = hackathon.endDate ? new Date(hackathon.endDate) : now;
+  const registrationDeadline = hackathon.registrationDeadline ? new Date(hackathon.registrationDeadline) : startDate;
+  const isRegistrationOpen = now < registrationDeadline;
 
   const getStatus = () => {
     if (now > endDate) return { label: 'Completed', color: 'gray' };
@@ -21,14 +23,15 @@ const HackathonCard = ({ hackathon, onApply }) => {
   const typeColors = {
     online: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
     'in-person': 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-    hybrid: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300'
+    hybrid: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300',
+    other: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
   };
 
   const statusColors = {
     blue: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
     green: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
     red: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-    gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+    gray: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
   };
 
   return (
@@ -38,13 +41,13 @@ const HackathonCard = ({ hackathon, onApply }) => {
     >
       <div className="relative">
         <img
-          src={hackathon.image}
+          src={hackathon.image || 'https://mlh.io/assets/images/mlh-logo-color.png'}
           alt={hackathon.title}
           className="w-full h-48 object-cover"
         />
         <div className="absolute top-4 left-4 flex space-x-2">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${typeColors[hackathon.type]}`}>
-            {hackathon.type.charAt(0).toUpperCase() + hackathon.type.slice(1)}
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${typeColors[hackathon.type] || typeColors.other}`}>
+            {hackathon.type ? hackathon.type.charAt(0).toUpperCase() + hackathon.type.slice(1) : 'Other'}
           </span>
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${statusColors[status.color]}`}>
             {status.label}
@@ -72,20 +75,20 @@ const HackathonCard = ({ hackathon, onApply }) => {
           </div>
           <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
             <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-            <span>{hackathon.location}</span>
+            <span>{hackathon.location || 'Unknown'}</span>
           </div>
           <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
             <Users className="w-4 h-4 mr-2 flex-shrink-0" />
-            <span>{hackathon.participants} participants • Max {hackathon.maxTeamSize} per team</span>
+            <span>{hackathon.participants || 0} participants • Max {hackathon.maxTeamSize || '-'} per team</span>
           </div>
           <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
             <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
-            <span>Registration closes {formatDistance(new Date(hackathon.registrationDeadline), now, { addSuffix: true })}</span>
+            <span>Registration closes {formatDistance(registrationDeadline, now, { addSuffix: true })}</span>
           </div>
         </div>
 
         <div className="flex flex-wrap gap-2 mb-4">
-          {hackathon.tags.slice(0, 3).map((tag) => (
+          {(hackathon.tags || []).slice(0, 3).map((tag) => (
             <span
               key={tag}
               className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full"
@@ -93,7 +96,7 @@ const HackathonCard = ({ hackathon, onApply }) => {
               {tag}
             </span>
           ))}
-          {hackathon.tags.length > 3 && (
+          {hackathon.tags && hackathon.tags.length > 3 && (
             <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full">
               +{hackathon.tags.length - 3}
             </span>
@@ -104,14 +107,19 @@ const HackathonCard = ({ hackathon, onApply }) => {
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">Prize Pool</div>
             <div className="text-lg font-bold text-green-600 dark:text-green-400">
-              {hackathon.prizePool}
+              {hackathon.prizePool || '-'}
             </div>
           </div>
 
           <div className="flex space-x-2">
-            <button className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+            <a
+              href={hackathon.url || hackathon.registrationUrl || '#'}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
               <ExternalLink className="w-4 h-4 text-gray-600 dark:text-gray-400" />
-            </button>
+            </a>
             {isRegistrationOpen && status.label !== 'Completed' && (
               <button
                 onClick={() => onApply?.(hackathon)}

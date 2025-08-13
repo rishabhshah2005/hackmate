@@ -9,6 +9,8 @@ import Dashboard from './components/Dashboard/Dashboard';
 import HackathonList from './components/Hackathons/HackathonList';
 import MatchingPage from './components/Matching/MatchingPage';
 import TeamsPage from './components/Teams/TeamsPage';
+import ProfilePage from './components/Profile/Profile';
+
 
 const ProtectedRoute = ({ children }) => {
   const { user, isLoading } = useAuth();
@@ -67,6 +69,7 @@ function App() {
               <Route path="hackathons" element={<HackathonList />} />
               <Route path="matching" element={<MatchingPage />} />
               <Route path="teams" element={<TeamsPage />} />
+              <Route path="profile" element={<ProfilePage />} />
             </Route>
           </Routes>
         </Router>

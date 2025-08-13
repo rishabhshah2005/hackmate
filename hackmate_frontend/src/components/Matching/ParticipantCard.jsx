@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, Github, Linkedin, MapPin, MessageCircle, UserPlus } from 'lucide-react';
+// highlight-next-line
+import { Star, Github, MapPin, MessageCircle, UserPlus, Target } from 'lucide-react';
 
 const ParticipantCard = ({ participant, onInvite, onMessage }) => {
   const experienceColors = {
@@ -27,13 +28,14 @@ const ParticipantCard = ({ participant, onInvite, onMessage }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300"
+      className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full"
     >
-      {/* Header */}
-      <div className="p-6 pb-4">
+      {/* Main Content */}
+      <div className="p-6 flex-grow">
+        {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center shrink-0">
               <span className="text-white font-semibold">
                 {participant.name.split(' ').map(n => n[0]).join('')}
               </span>
@@ -48,75 +50,73 @@ const ParticipantCard = ({ participant, onInvite, onMessage }) => {
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${experienceColors[participant.experience]}`}>
+          <div className="text-right ml-2">
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize ${experienceColors[participant.experience]}`}>
               {participant.experience}
             </span>
           </div>
         </div>
 
         <div className="flex items-center text-sm text-gray-600 dark:text-gray-400 mb-4">
-          <MapPin className="mr-1 h-4 w-4" />
+          <MapPin className="mr-1.5 h-4 w-4 shrink-0" />
           {participant.location}
         </div>
 
         {/* Compatibility Score */}
-        <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getCompatibilityBg(participant.compatibility)} ${getCompatibilityColor(participant.compatibility)}`}>
-          <Target className="mr-1 h-3 w-3" />
+        <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getCompatibilityBg(participant.compatibility)} ${getCompatibilityColor(participant.compatibility)} mb-4`}>
+          <Target className="mr-1.5 h-4 w-4" />
           {participant.compatibility}% Match
         </div>
-      </div>
 
-      {/* Bio */}
-      <div className="px-6 pb-4">
-        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+        {/* Bio */}
+        <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-4">
           {participant.bio}
         </p>
-      </div>
 
-      {/* Skills */}
-      <div className="px-6 pb-4">
-        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-          Skills
-        </h4>
-        <div className="flex flex-wrap gap-2">
-          {participant.skills.slice(0, 4).map((skill) => (
-            <span
-              key={skill}
-              className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs"
-            >
-              {skill}
-            </span>
-          ))}
-          {participant.skills.length > 4 && (
-            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs">
-              +{participant.skills.length - 4}
-            </span>
-          )}
-        </div>
-      </div>
-
-      {/* Complementary Skills */}
-      {participant.complementarySkills && participant.complementarySkills.length > 0 && (
-        <div className="px-6 pb-4">
-          <h4 className="text-sm font-medium text-green-600 dark:text-green-400 mb-2">
-            Complementary Skills
+        {/* Skills */}
+        <div className="mb-4">
+          <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
+            Skills
           </h4>
           <div className="flex flex-wrap gap-2">
-            {participant.complementarySkills.slice(0, 3).map((skill) => (
+            {participant.skills.slice(0, 4).map((skill) => (
               <span
                 key={skill}
-                className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-md text-xs border border-green-200 dark:border-green-800"
+                className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs"
               >
                 {skill}
               </span>
             ))}
+            {participant.skills.length > 4 && (
+              <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md text-xs">
+                +{participant.skills.length - 4}
+              </span>
+            )}
           </div>
         </div>
-      )}
 
-      {/* Actions */}
-      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between">
+        {/* Complementary Skills */}
+        {participant.complementarySkills && participant.complementarySkills.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-green-600 dark:text-green-400 mb-2">
+              Complementary Skills
+            </h4>
+            <div className="flex flex-wrap gap-2">
+              {participant.complementarySkills.slice(0, 3).map((skill) => (
+                <span
+                  key={skill}
+                  className="px-2 py-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded-md text-xs border border-green-200 dark:border-green-800"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Actions Footer */}
+      <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between mt-auto">
         <div className="flex space-x-2">
           {participant.github && (
             <a
@@ -124,22 +124,24 @@ const ParticipantCard = ({ participant, onInvite, onMessage }) => {
               target="_blank"
               rel="noopener noreferrer"
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              aria-label="GitHub Profile"
             >
-              <Github className="h-4 w-4" />
+              <Github className="h-5 w-5" />
             </a>
           )}
           <button
             onClick={() => onMessage?.(participant)}
             className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            aria-label="Send Message"
           >
-            <MessageCircle className="h-4 w-4" />
+            <MessageCircle className="h-5 w-5" />
           </button>
         </div>
         <button
           onClick={() => onInvite?.(participant)}
           className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center"
         >
-          <UserPlus className="mr-1 h-4 w-4" />
+          <UserPlus className="mr-1.5 h-4 w-4" />
           Invite
         </button>
       </div>
