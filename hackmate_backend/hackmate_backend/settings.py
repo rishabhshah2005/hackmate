@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "authentication",
     "users",
     "hackathons",
+    'teams',
 ]
 
 MIDDLEWARE = [

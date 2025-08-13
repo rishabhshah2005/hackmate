@@ -10,6 +10,7 @@ import HackathonList from './components/Hackathons/HackathonList';
 import MatchingPage from './components/Matching/MatchingPage';
 import TeamsPage from './components/Teams/TeamsPage';
 import ProfilePage from './components/Profile/Profile';
+import CreateTeam from './components/Teams/CreateTeam';
 
 
 const ProtectedRoute = ({ children }) => {
@@ -70,6 +71,7 @@ function App() {
               <Route path="matching" element={<MatchingPage />} />
               <Route path="teams" element={<TeamsPage />} />
               <Route path="profile" element={<ProfilePage />} />
+              <Route path="createteam" element={<CreateTeam />} />
             </Route>
           </Routes>
         </Router>
