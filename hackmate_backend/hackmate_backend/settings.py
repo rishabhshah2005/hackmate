@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
     # Third-party
     "rest_framework",
     "corsheaders",
@@ -47,7 +48,11 @@ INSTALLED_APPS = [
     "authentication",
     "users",
     "hackathons",
+<<<<<<< HEAD
     'teams',
+=======
+    "hackathon_applications",
+>>>>>>> 5faafb78b656079ca0acf5a767fe57a87c7ae741
 ]
 
 MIDDLEWARE = [
@@ -145,6 +150,9 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.AllowAny",
     ),
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
 }
 
 # --- JWT token lifetime ---
