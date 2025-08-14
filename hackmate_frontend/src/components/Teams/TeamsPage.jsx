@@ -3,10 +3,13 @@ import { motion } from 'framer-motion';
 import { Users, MessageCircle, Plus, Settings, Calendar, Trophy, Star } from 'lucide-react';
 import { mockTeams } from '../../data/mockData';
 import TeamChat from './TeamChat';
+import {useNavigate} from 'react-router-dom'
 
 const TeamsPage = () => {
   const [selectedTeam, setSelectedTeam] = useState(mockTeams[0]);
   const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate()
+  
 
   const statusColors = {
     looking: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
@@ -28,7 +31,7 @@ const TeamsPage = () => {
           </p>
         </div>
 
-        <button className="mt-4 md:mt-0 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center">
+        <button onClick={()=>navigate('/createteam')} className="mt-4 md:mt-0 bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 flex items-center">
           <Plus className="w-5 h-5 mr-2" />
           Create Team
         </button>

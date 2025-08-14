@@ -47,7 +47,7 @@ def create_team(request):
 
     # Create the team
     customeruser = CustomUser.objects.all()[1]
-    print(customeruser)
+    # print(customeruser)
     
     team = Team.objects.create(
             name=team_name,
@@ -86,4 +86,11 @@ def create_team(request):
         
     return Response(response_data, status=status.HTTP_201_CREATED)
     
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def get_hackathons(request: HttpRequest):
+    if request.method == "POST":
+        query = request.data.get("query")
+        hackathons = Hackathon.objects.filter(title__icontains=str(query)).values('id', 'title')
+        return Response({"answer":hackathons})    
     

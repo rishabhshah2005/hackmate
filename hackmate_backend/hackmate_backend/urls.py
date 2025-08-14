@@ -26,8 +26,8 @@ urlpatterns = [
     path("auth/", include("authentication.urls")),
     path("users/", include("users.urls")),
     path("hackathons/", include("hackathons.urls")),
-    path("teams/", include('teams.urls')),
     path("applications/", include("hackathon_applications.urls")),
+    path("teams/", include("teams.urls")),
 ]
 
 if settings.DEBUG:
