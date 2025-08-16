@@ -4,7 +4,6 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 import uuid
 
-User = get_user_model()
 
 class Hackathon(models.Model):
     STATUS_CHOICES = [
@@ -41,7 +40,7 @@ class Hackathon(models.Model):
     # description = models.TextField()
     short_description = models.CharField(max_length=500)
     banner_image = models.ImageField(upload_to='hackathons/banners/', blank=True)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organized_hackathons')
+    organizer = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='organized_hackathons')
     
     # Categories and Tags (as JSON fields)
     categories = models.JSONField(default=list, help_text="e.g., ['AI/ML', 'Web Dev', 'Mobile Apps']")
@@ -163,7 +162,7 @@ class HackathonApplication(models.Model):
     ]
     
     # Core Application Info
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='hackathon_applications')
+    user = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='hackathon_applications')
     hackathon = models.ForeignKey(Hackathon, on_delete=models.CASCADE, related_name='applications')
     
     application_type = models.CharField(max_length=20, choices=APPLICATION_TYPE_CHOICES, default='individual')

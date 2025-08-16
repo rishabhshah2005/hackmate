@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
+from hackathons.models import Hackathon
+from teams.models import Team
 
 class User(AbstractUser):
     ROLE_CHOICES = [
@@ -15,6 +16,10 @@ class User(AbstractUser):
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=100, blank=True)
     phone_number = models.CharField(max_length=15, blank=True)
+    
+    # Team and hackathon status
+    current_team = models.ForeignKey(to=Team, null=True, default=None, on_delete=models.CASCADE)
+    current_hackathon = models.ForeignKey(to=Hackathon, null=True, default=None, on_delete=models.CASCADE)
     
     # Profile Links
     github_url = models.URLField(blank=True)

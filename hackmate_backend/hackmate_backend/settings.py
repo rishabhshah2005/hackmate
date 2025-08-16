@@ -93,7 +93,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     'users',
-    'hackathons'
+    'hackathons',
+    'teams',
 ]
 
 MIDDLEWARE = [
@@ -163,3 +164,5 @@ STATIC_URL = '/static/'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "users.User"

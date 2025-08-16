@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from .models import Hackathon, HackathonApplication
 from .serializers import HackathonSerializer, HackathonCreateSerializer, HackathonApplicationCreateSerializer, HackathonApplicationSerializer
 from django.utils import timezone
+from teams.models import Team
 
 @api_view(['GET', 'POST'])
 def hackathon_list_view(request):
@@ -95,6 +96,22 @@ def hackathon_apply_view(request, id):
             hackathon.save(update_fields=['confirmed_participants'])
             application.confirmed_at = timezone.now()
             application.save(update_fields=['confirmed_at'])
+            
+            # Create the team
+            # team = Team.objects.create(
+            #     name=team_name,
+            #     description=description,
+            #     hackathon=hackathon,
+            #     leader=request.user,
+            #     max_members=max_members,
+            #     is_recruiting=is_recruiting,
+            #     is_private=is_private,
+            #     project_name=project_name,
+            #     project_description=project_description,
+            #     github_repo=github_repo,
+            #     demo_url=demo_url
+            # )
+
         
         return Response({
             'success': True, 
